@@ -37,9 +37,13 @@ func main() {
 			fmt.Println(builtinToCheck)
 		} else if strings.HasPrefix(command, "type ") {
 			// 3. Work with typeee
+			found = false
 			for _, cmd := range commands {
 				if builtinToCheck == cmd {
 					fmt.Println(builtinToCheck + " is a shell builtin")
+					found = true
+				} else {
+					fmt.Println(command + ": command not found")
 				}
 			}
 		} else {
