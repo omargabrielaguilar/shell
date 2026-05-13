@@ -41,13 +41,14 @@ func main() {
 			for _, cmd := range commands {
 				if builtinToCheck == cmd {
 					found = true
+					break
 				}
+			}
 
-				if found {
-					fmt.Println(command + " is a shell builtin")
-				} else {
-					fmt.Println(command + ": command not found")
-				}
+			if found {
+				fmt.Println(builtinToCheck + " is a shell builtin")
+			} else {
+				fmt.Println(builtinToCheck + ": not found")
 			}
 		} else {
 			fmt.Println(command + ": command not found")
