@@ -64,7 +64,7 @@ func main() {
 		}
 
 		program := parts[0]
-
+		// cambios
 		if _, err := exec.LookPath(program); err != nil {
 			fmt.Println(program + ": command not found")
 			continue
