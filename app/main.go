@@ -17,6 +17,7 @@ func main() {
 		"exit",
 		"echo",
 		"type",
+		"pwd", // ya que se va a usar como commando aceptado para las pruebas de impresion de rutas
 	}
 
 	for {
@@ -31,6 +32,17 @@ func main() {
 
 		if strings.HasPrefix(command, "echo ") {
 			fmt.Println(command[5:])
+			continue
+		}
+
+		if command == "pwd" {
+			cwd, err := os.Getwd()
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			fmt.Println(cwd)
 			continue
 		}
 
