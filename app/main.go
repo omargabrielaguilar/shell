@@ -9,21 +9,15 @@ import (
 	"strings"
 )
 
-var _ = fmt.Print
-
 func main() {
-	// el reader
 	reader := bufio.NewReader(os.Stdin)
 
-	// lista de builtin a usar
+	// list of command accept
 	commands := []string{
 		"exit",
 		"echo",
 		"type",
 	}
-
-	// IMPORTANTE EN GO:
-	// value, err := something()
 
 	for {
 		fmt.Print("$ ")
@@ -41,16 +35,13 @@ func main() {
 		}
 
 		if strings.HasPrefix(command, "type ") {
-
 			arg := strings.TrimSpace(command[5:])
 
-			// en reemplazo de for, un loop manual reemplazado por slices
 			if slices.Contains(commands, arg) {
 				fmt.Println(arg + " is a shell builtin")
 				continue
 			}
 
-			// buscar executable   usando path
 			path, err := exec.LookPath(arg)
 
 			if err == nil {
@@ -62,6 +53,35 @@ func main() {
 			continue
 		}
 
-		fmt.Println(command + ": command not found")
+		// ---------------------------
+		// External commands
+		// ---------------------------
+
+		parts := strings.Fields(command)
+
+		if len(parts) == 0 {
+			continue
+		}
+
+		program := parts[0]
+
+		// reutiliza la misma lógica de "type"
+		path, err := exec.LookPath(program)
+		if err != nil {
+			fmt.Println(program + ": command not found")
+			continue
+		}
+
+		// args excluye el nombre del programa
+		cmd := exec.Command(path, parts[1:]...)
+
+		// conecta entrada/salida al terminal
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		if err := cmd.Run(); err != nil {
+			fmt.Println(err)
+		}
 	}
 }
