@@ -18,6 +18,7 @@ func main() {
 		"echo",
 		"type",
 		"pwd", // ya que se va a usar como commando aceptado para las pruebas de impresion de rutas
+		"cd",
 	}
 
 	for {
@@ -26,15 +27,18 @@ func main() {
 		command, _ := reader.ReadString('\n')
 		command = strings.TrimSpace(command)
 
+		// exit
 		if command == "exit" {
 			break
 		}
 
+		// echo
 		if strings.HasPrefix(command, "echo ") {
 			fmt.Println(command[5:])
 			continue
 		}
 
+		// pwd
 		if command == "pwd" {
 			cwd, err := os.Getwd()
 			if err != nil {
@@ -46,6 +50,25 @@ func main() {
 			continue
 		}
 
+		// cd
+		if strings.HasPrefix(command, "cd ") {
+			dir := strings.TrimSpace(command[3:])
+
+			info, err := os.Stat(dir)
+
+			if err != nil || !info.IsDir() {
+				fmt.Printf("cd: %s: No such file or directory\n", dir)
+				continue
+			}
+
+			if err := os.Chdir(dir); err != nil {
+				fmt.Printf("cd: %s: No such file or directory\n", dir)
+			}
+
+			continue
+		}
+
+		// type
 		if strings.HasPrefix(command, "type ") {
 			arg := strings.TrimSpace(command[5:])
 
@@ -61,13 +84,10 @@ func main() {
 			} else {
 				fmt.Println(arg + ": not found")
 			}
-
 			continue
 		}
 
-		// ---------------------------
 		// External commands
-		// ---------------------------
 
 		parts := strings.Fields(command)
 
