@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"slices"
@@ -16,20 +17,30 @@ var builtins = []string{
 	"cd",
 }
 
-func handleBuiltin(parts []string) bool {
+func handleBuiltin(parts []string, redirect Redirect) bool {
+	var out io.Writer = os.Stdout
+
+	if redirect.Enabled {
+		file, err := os.Create(redirect.File)
+		if err == nil {
+			defer file.Close()
+			out = file
+		}
+	}
+
 	switch parts[0] {
 
 	case "exit":
 		os.Exit(0)
 
 	case "echo":
-		fmt.Println(strings.Join(parts[1:], " "))
+		fmt.Fprintln(out, strings.Join(parts[1:], " "))
 		return true
 
 	case "pwd":
 		cwd, err := os.Getwd()
 		if err == nil {
-			fmt.Println(cwd)
+			fmt.Fprintln(out, cwd)
 		}
 		return true
 
@@ -58,16 +69,16 @@ func handleBuiltin(parts []string) bool {
 		arg := parts[1]
 
 		if slices.Contains(builtins, arg) {
-			fmt.Println(arg + " is a shell builtin")
+			fmt.Fprintln(out, arg+" is a shell builtin")
 			return true
 		}
 
 		path, err := exec.LookPath(arg)
 
 		if err == nil {
-			fmt.Println(arg + " is " + path)
+			fmt.Fprintln(out, arg+" is "+path)
 		} else {
-			fmt.Println(arg + ": not found")
+			fmt.Fprintln(out, arg+": not found")
 		}
 
 		return true

@@ -28,7 +28,13 @@ func main() {
 			continue
 		}
 
-		if handleBuiltin(parts) {
+		parts, redirect := extractRedirect(parts)
+
+		if len(parts) == 0 {
+			continue
+		}
+
+		if handleBuiltin(parts, redirect) {
 			continue
 		}
 
@@ -42,8 +48,23 @@ func main() {
 		cmd := exec.Command(program, parts[1:]...)
 
 		cmd.Stdin = os.Stdin
-		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
+
+		if redirect.Enabled {
+
+			file, err := os.Create(redirect.File)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			defer file.Close()
+
+			cmd.Stdout = file
+
+		} else {
+			cmd.Stdout = os.Stdout
+		}
 
 		if err := cmd.Run(); err != nil {
 			fmt.Println(err)
