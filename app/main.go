@@ -13,14 +13,22 @@ func parseCommand(input string) []string {
 	var args []string
 	var current strings.Builder
 
-	inQuote := false
+	inSingleQuote := false
+	inDoubleQuote := false
 
 	for _, ch := range input {
 		switch {
-		case ch == '\'':
-			inQuote = !inQuote
 
-		case (ch == ' ' || ch == '\t') && !inQuote:
+		case ch == '\'' && !inDoubleQuote:
+			inSingleQuote = !inSingleQuote
+
+		case ch == '"' && !inSingleQuote:
+			inDoubleQuote = !inDoubleQuote
+
+		case (ch == ' ' || ch == '\t') &&
+			!inSingleQuote &&
+			!inDoubleQuote:
+
 			if current.Len() > 0 {
 				args = append(args, current.String())
 				current.Reset()
