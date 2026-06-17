@@ -66,8 +66,6 @@ func main() {
 			cmd.Stdout = os.Stdout
 		}
 
-		if err := cmd.Run(); err != nil {
-			fmt.Println(err)
-		}
+		_ = cmd.Run()
 	}
 }
