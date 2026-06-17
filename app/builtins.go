@@ -67,7 +67,7 @@ func handleBuiltin(parts []string, redirect Redirect) bool {
 		if err == nil {
 			fmt.Fprintln(out, arg+" is "+path)
 		} else {
-			// ✅ Los errores van a stderr
+			// Los errores van a stderr
 			fmt.Fprintf(os.Stderr, "%s: not found\n", arg)
 		}
 		return true
