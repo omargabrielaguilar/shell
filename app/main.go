@@ -133,7 +133,6 @@ func main() {
 		}
 
 		// External commands
-
 		program := parts[0]
 		// cambios permitir imprimir el programa, no la ruta completa
 		if _, err := exec.LookPath(program); err != nil {
