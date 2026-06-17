@@ -14,12 +14,37 @@ func parseCommand(input string) []string {
 
 		ch := input[i]
 
+		// Escapes fuera de quotes
 		if escaping {
 			current.WriteByte(ch)
 			escaping = false
 			continue
 		}
 
+		// Escapes dentro de double quotes
+		if inDoubleQuote && ch == '\\' {
+
+			if i+1 < len(input) {
+
+				next := input[i+1]
+
+				// Para este stage solo:
+				// \" -> "
+				// \\ -> \
+				if next == '"' || next == '\\' {
+					current.WriteByte(next)
+					i++
+					continue
+				}
+			}
+
+			// Para cualquier otro caracter
+			// el backslash es literal
+			current.WriteByte(ch)
+			continue
+		}
+
+		// Escapes fuera de quotes
 		if ch == '\\' &&
 			!inSingleQuote &&
 			!inDoubleQuote {
